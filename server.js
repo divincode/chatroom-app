@@ -2,22 +2,29 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
+const {
+  userJoin,
+  getCurrentUser,
+  userLeave,
+  getRoomUsers
+} = require('./utils/users');
+const formatMessage = require('./utils/messages');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
-
+const botName = 'ChatRoom Bot';
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', socket => {
   socket.on('joinRoom', ({ username, room }) => {
     const user = userJoin(socket.id, username, room);
-
+    console.log("hello");
     socket.join(user.room);
 
     // Welcome current user
-    socket.emit('message', formatMessage(botName, 'Welcome to ChatCord!'));
+    socket.emit('message', formatMessage(botName, 'Welcome to the chatroom!'));
 
     // Broadcast when a user connects
     socket.broadcast
